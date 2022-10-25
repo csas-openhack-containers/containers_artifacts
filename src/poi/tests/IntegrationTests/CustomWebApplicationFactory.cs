@@ -79,8 +79,8 @@ namespace IntegrationTests
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex, $"An error occurred seeding the " +
-                            "database with test POIs. Error: {ex.Message}");
+                        logger.LogError(ex, "An error occurred seeding the " +
+                            $"database with test POIs. Error: {ex.Message}");
                     }
                 }
             });

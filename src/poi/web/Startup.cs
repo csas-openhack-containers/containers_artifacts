@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Reflection;
 using poi.Data;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.Rewrite;
 using Prometheus;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
+using Microsoft.OpenApi.Models;
 
 namespace poi
 {
@@ -34,7 +36,7 @@ namespace poi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc()
-                .AddJsonOptions(options =>
+                .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.Formatting = Formatting.Indented;
                 });
@@ -46,13 +48,15 @@ namespace poi
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("docs", new Info { Title = "Trip Insights Points Of Interest (POI) API", Description = "API for the trips in the Trip Insights app. https://github.com/Azure-Samples/openhack-containers", Version = "v1" });
+                c.SwaggerDoc("docs", new OpenApiInfo { Title = "Trip Insights Points Of Interest (POI) API", Description = "API for the trips in the Trip Insights app. https://github.com/Azure-Samples/openhack-containers", Version = "v1" });
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            app.UseRouting();
+
             // set up prometheus
             app.UseMetricServer();
             app.UseHttpMetrics();
@@ -97,7 +101,10 @@ namespace poi
                 c.RoutePrefix = "api/docs/poi";
             });
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
+            });
         }
     }
 }
