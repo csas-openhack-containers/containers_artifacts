@@ -1,7 +1,7 @@
 # 
 # builder - first stage to build the application
 # 
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS build-env
 WORKDIR /app
 
 # copy csproj and restore as distinct layers
@@ -38,7 +38,7 @@ COPY ./web/appsettings.json /app/web/out/
 # 
 # runtime - build final runtime image
 # 
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2.6-alpine3.9
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
 
 ARG IMAGE_CREATE_DATE
 ARG IMAGE_VERSION
